@@ -1,0 +1,107 @@
+/**
+ * App Module
+ */
+
+var app = (function(msl) {
+
+  var keyString = "::"
+  var keyRegExp = /\s*::\s*/
+  var pluginNamePrefix = "Stater: "
+  var msgText = {
+    noGroupSelected : pluginNamePrefix + "select a layer group",
+    noKeyFound      : pluginNamePrefix + "name a group like ‘Active" + keyString + "id’",
+    somethingWrong  : pluginNamePrefix + "something went wrong :(",
+    OK              : pluginNamePrefix + "OK"
+  }
+
+  // NSArray -> ...
+  var switchState = function(group) {
+    var resultBool = true
+    var groupName = [group name]
+    var nameParts = groupName.split(keyRegExp)
+    var layerIdToSetActive = nameParts[nameParts.length - 1]
+    var layers = [[group layers] array]
+
+    if (msl.isNSArrayExist(layers)) {
+      var layersWithKeyInName =
+        msl.getLayersWithSubstringInName(layers, keyString)
+
+      if (msl.isNSArrayExist(layersWithKeyInName)) {
+        var layerWithActiveStyle =
+          msl.getLayerWithDistinctStyle(layersWithKeyInName)
+
+        if (layerWithActiveStyle) {
+          var layerToSetActive =
+            msl.getLayerByIdInName(layersWithKeyInName, layerIdToSetActive)
+
+          if (layerToSetActive) {
+            var styleActive = [layerWithActiveStyle style]
+            var styleRest = [layerToSetActive style]
+
+            [layerToSetActive setStyle:styleActive]
+            [layerWithActiveStyle setStyle:styleRest]
+          } else {
+            resultBool = false
+          }
+        } else {
+          resultBool = false
+        }
+      } else {
+        resultBool = false
+      }
+    } else {
+      resultBool = false
+    }
+
+    return resultBool
+  }
+
+  // NSArray -> String
+  var init = function(selectedLayers) {
+    var resultString = msgText.OK
+
+    if (msl.isNSArrayExist(selectedLayers)) {
+      var selectedGroups = msl.getGroupLayers(selectedLayers)
+
+      if (msl.isNSArrayExist(selectedGroups)) {
+        var selectedGroupsWithKeyInName =
+          msl.getLayersWithSubstringInName(selectedGroups, keyString)
+
+        if (msl.isNSArrayExist(selectedGroupsWithKeyInName)) {
+          var loopGroup = [selectedGroupsWithKeyInName objectEnumerator]
+
+          while (group = [loopGroup nextObject]) {
+            switchState(group)
+          }
+        } else {
+          resultString = msgText.noKeyFound
+        }
+      } else {
+        resultString = msgText.noGroupSelected
+      }
+    } else {
+      resultString = msgText.noGroupSelected
+    }
+
+    return resultString
+  }
+
+  return {
+    init : init
+  }
+})(msl)
+
+
+
+/**
+ * Entry point
+ */
+
+var onRun = function(context) {
+  var doc       = context.document
+  var selection = context.selection
+
+  var resultString = app.init(selection)
+
+  [doc showMessage:resultString]
+}

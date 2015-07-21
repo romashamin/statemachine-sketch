@@ -1,0 +1,301 @@
+/**
+ * State-Machine 1.0
+ *
+ * Copyright © 2015 Roman Shamin https://github.com/romashamin
+ * and licenced under the MIT licence. All rights not explicitly
+ * granted in the MIT license are reserved. See the included
+ * LICENSE file for more details.
+ *
+ * https://github.com/romashamin/
+ * https://twitter.com/romanshamin
+ */
+
+/**
+ * MSStyle Helpers Module
+ *
+ * MSStyle properties to compare
+ *  blur            : MSStyleBlur
+ *  borderOptions   : MSStyleBorderOptions
+ *  borders         : MSBorderStyleCollection
+ *  colorControls   : MSStyleColorControls
+ *  contextSettings : MSGraphicsContextSettings
+ *  fills           : MSFillStyleCollection
+ *  innerShadows    : MSInnerShadowStyleCollection
+ *  reflection      : MSStyleReflection
+ *  shadows         : MSShadowStyleCollection
+ */
+
+var mss = (function() {
+
+  // MSStyle, MSStyle -> bool
+  var areStylesEqual = function(style1, style2) {
+    var areEqual = false
+
+    if (_areObjectsEqual(    [style1 blur],           [style2 blur])          &&
+        _areObjectsEqual(    [style1 borderOptions],  [style2 borderOptions]) &&
+        _areObjectsEqual(    [style1 colorControls],  [style2 colorControls]) &&
+        _areCollectionsEqual([style1 borders],        [style2 borders])       &&
+        _areCollectionsEqual([style1 fills],          [style2 fills])         &&
+        _areCollectionsEqual([style1 innerShadows],   [style2 innerShadows])  &&
+        _areCollectionsEqual([style1 shadows],        [style2 shadows])) {
+
+      areEqual = true
+    }
+
+    return areEqual
+  }
+
+  // MSCollection, MSCollection -> number
+  var _areCollectionsEqual = function(coll1, coll2) {
+    if ([coll1 count] != [coll2 count]) {
+      return 0
+    }
+
+    var predicateIsEnabled =
+      [NSPredicate predicateWithFormat:@"isEnabled == YES"]
+    var enabledObjects1 =
+      [[coll1 array] filteredArrayUsingPredicate:predicateIsEnabled]
+    var enabledObjects2 =
+      [[coll2 array] filteredArrayUsingPredicate:predicateIsEnabled]
+
+    if ([enabledObjects1 count] != [enabledObjects2 count]) {
+      return 0
+    }
+
+    for (var i = 0, l = [enabledObjects1 count]; i < l; i++) {
+      if (!_areObjectsEqual([enabledObjects1 objectAtIndex:i],
+                            [enabledObjects2 objectAtIndex:i])) {
+        return 0
+      }
+    }
+
+    return 1
+  }
+
+  // MSObject, MSObject -> bool
+  var _areObjectsEqual = function(obj1, obj2) {
+    if ([obj1 isEnabled] && [obj2 isEnabled]) {
+      var dic1 = _getAsDicWithoutObjectID(obj1)
+      var dic2 = _getAsDicWithoutObjectID(obj2)
+      return [dic1 isEqualToDictionary:dic2]
+    } else if (![obj1 isEnabled] && ![obj2 isEnabled]) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  // MSObject -> NSMutableDictionary
+  var _getAsDicWithoutObjectID = function(object) {
+    var dic = [object treeAsDictionary]
+    // FIXME: What if there is no 'objectID' key in object?
+    [dic removeObjectForKey:"objectID"]
+    return dic
+  }
+
+  return {
+    areStylesEqual : areStylesEqual
+  }
+})()
+
+/**
+ * MSLayer Helpers Module
+ */
+
+var msl = (function() {
+
+ var predicateGroupLayers =
+   [NSPredicate predicateWithFormat:@"self isMemberOfClass:%@", [MSLayerGroup class]]
+ var predicateShapeLayers =
+   [NSPredicate predicateWithFormat:@"self isMemberOfClass:%@", [MSShapeGroup class]]
+
+ // NSPredicate -> (->)
+ var _makeLayersFilter = function(predicate) {
+  return function(layers) {
+    return [layers filteredArrayUsingPredicate:predicate]
+  }
+ }
+
+ // NSArray -> NSArray
+ var getGroupLayers = _makeLayersFilter(predicateGroupLayers)
+
+ // NSArray -> NSArray
+ var getShapeLayers = _makeLayersFilter(predicateShapeLayers)
+
+ // NSArray, String -> NSArray
+ var getLayersWithSubstringInName = function(layers, substring) {
+   var predicateLayersWithSubstringInName =
+     [NSPredicate predicateWithFormat:@"name CONTAINS %@", substring]
+
+   return _makeLayersFilter(predicateLayersWithSubstringInName)(layers)
+ }
+
+ // NSArray, String -> MSLayer
+ var getLayerByIdInName = function(layers, id) {
+   var result = undefined
+   var resultLayers = getLayersWithSubstringInName(layers, id)
+
+   if (isNSArrayExist(resultLayers)) {
+     result = [resultLayers objectAtIndex:0]
+   }
+
+   return result
+ }
+
+ // NSArray -> MSLayer
+ var getLayerWithDistinctStyle = function(layers) {
+   if ([layers count] < 3) {
+     return undefined
+   }
+
+   var indexOfFirst  = 0
+   var indexOfSecond = 1
+   var indexOfPenultimate = [layers count] - 2
+   var indexOfLast        = [layers count] - 1
+
+   for (var i = indexOfSecond; i < indexOfPenultimate; i++) {
+     var currentLayer  = [layers objectAtIndex:i]
+     var previousLayer = [layers objectAtIndex:i-1]
+     var nextLayer     = [layers objectAtIndex:i+1]
+
+     if (!mss.areStylesEqual([currentLayer style], [previousLayer style]) &&
+         !mss.areStylesEqual([currentLayer style], [nextLayer style])) {
+       return currentLayer
+     }
+   }
+
+   if (!mss.areStylesEqual([[layers objectAtIndex:indexOfFirst] style],
+                           [[layers objectAtIndex:indexOfSecond] style])) {
+     return [layers objectAtIndex:indexOfFirst]
+   }
+
+   if (!mss.areStylesEqual([[layers objectAtIndex:indexOfLast] style],
+                           [[layers objectAtIndex:indexOfPenultimate] style])) {
+     return [layers objectAtIndex:indexOfLast]
+   }
+
+   return undefined
+ }
+
+ // NSArray -> bool
+ var isNSArrayExist = function(nsarray) {
+   return nsarray && [nsarray count] > 0
+ }
+
+ return {
+  getGroupLayers     : getGroupLayers,
+  getShapeLayers     : getShapeLayers,
+  getLayerByIdInName : getLayerByIdInName,
+  isNSArrayExist     : isNSArrayExist,
+  getLayerWithDistinctStyle    : getLayerWithDistinctStyle,
+  getLayersWithSubstringInName : getLayersWithSubstringInName
+ }
+})()
+
+/**
+ * App Module
+ */
+
+var app = (function(msl) {
+
+  var keyString = "::"
+  var keyRegExp = /\s*::\s*/
+  var pluginNamePrefix = "Stater: "
+  var msgText = {
+    noGroupSelected : pluginNamePrefix + "select a layer group",
+    noKeyFound      : pluginNamePrefix + "name a group like ‘Active" + keyString + "id’",
+    somethingWrong  : pluginNamePrefix + "something went wrong :(",
+    OK              : pluginNamePrefix + "OK"
+  }
+
+  // NSArray -> ...
+  var switchState = function(group) {
+    var resultBool = true
+    var groupName = [group name]
+    var nameParts = groupName.split(keyRegExp)
+    var layerIdToSetActive = nameParts[nameParts.length - 1]
+    var layers = [[group layers] array]
+
+    if (msl.isNSArrayExist(layers)) {
+      var layersWithKeyInName =
+        msl.getLayersWithSubstringInName(layers, keyString)
+
+      if (msl.isNSArrayExist(layersWithKeyInName)) {
+        var layerWithActiveStyle =
+          msl.getLayerWithDistinctStyle(layersWithKeyInName)
+
+        if (layerWithActiveStyle) {
+          var layerToSetActive =
+            msl.getLayerByIdInName(layersWithKeyInName, layerIdToSetActive)
+
+          if (layerToSetActive) {
+            var styleActive = [layerWithActiveStyle style]
+            var styleRest = [layerToSetActive style]
+
+            [layerToSetActive setStyle:styleActive]
+            [layerWithActiveStyle setStyle:styleRest]
+          } else {
+            resultBool = false
+          }
+        } else {
+          resultBool = false
+        }
+      } else {
+        resultBool = false
+      }
+    } else {
+      resultBool = false
+    }
+
+    return resultBool
+  }
+
+  // NSArray -> String
+  var init = function(selectedLayers) {
+    var resultString = msgText.OK
+
+    if (msl.isNSArrayExist(selectedLayers)) {
+      var selectedGroups = msl.getGroupLayers(selectedLayers)
+
+      if (msl.isNSArrayExist(selectedGroups)) {
+        var selectedGroupsWithKeyInName =
+          msl.getLayersWithSubstringInName(selectedGroups, keyString)
+
+        if (msl.isNSArrayExist(selectedGroupsWithKeyInName)) {
+          var loopGroup = [selectedGroupsWithKeyInName objectEnumerator]
+
+          while (group = [loopGroup nextObject]) {
+            switchState(group)
+          }
+        } else {
+          resultString = msgText.noKeyFound
+        }
+      } else {
+        resultString = msgText.noGroupSelected
+      }
+    } else {
+      resultString = msgText.noGroupSelected
+    }
+
+    return resultString
+  }
+
+  return {
+    init : init
+  }
+})(msl)
+
+
+
+/**
+ * Entry point
+ */
+
+var onRun = function(context) {
+  var doc       = context.document
+  var selection = context.selection
+
+  var resultString = app.init(selection)
+
+  [doc showMessage:resultString]
+}

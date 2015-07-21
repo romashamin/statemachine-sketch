@@ -1,0 +1,25 @@
+{
+  "name": "State Machine",
+  "description": "Helps manage state of components like Page Controls and Tab Bars",
+  "author": "Roman Shamin",
+  "homepage": "https://github.com/romashamin/statemachine-sketch",
+  "version": 1.0,
+  "identifier": "com.github.romashamin.statemachine-sketch",
+  "updateURL": "https://github.com/romashamin/statemachine-sketch",
+  "compatibleVersion": 3,
+  "bundleVersion": 1,
+  "commands": [
+    {
+      "name": "Update Component",
+      "identifier": "update-component",
+      "shortcut": "ctrl cmd s",
+      "handler" : "onRun",
+      "script": "State-Machine.coscript"
+    }
+  ],
+  "menu": {
+    "items": [
+      "update-component"
+    ]
+  }
+}

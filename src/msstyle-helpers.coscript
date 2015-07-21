@@ -1,0 +1,87 @@
+/**
+ * MSStyle Helpers Module
+ *
+ * MSStyle properties to compare
+ *  blur            : MSStyleBlur
+ *  borderOptions   : MSStyleBorderOptions
+ *  borders         : MSBorderStyleCollection
+ *  colorControls   : MSStyleColorControls
+ *  contextSettings : MSGraphicsContextSettings
+ *  fills           : MSFillStyleCollection
+ *  innerShadows    : MSInnerShadowStyleCollection
+ *  reflection      : MSStyleReflection
+ *  shadows         : MSShadowStyleCollection
+ */
+
+var mss = (function() {
+
+  // MSStyle, MSStyle -> bool
+  var areStylesEqual = function(style1, style2) {
+    var areEqual = false
+
+    if (_areObjectsEqual(    [style1 blur],           [style2 blur])          &&
+        _areObjectsEqual(    [style1 borderOptions],  [style2 borderOptions]) &&
+        _areObjectsEqual(    [style1 colorControls],  [style2 colorControls]) &&
+        _areCollectionsEqual([style1 borders],        [style2 borders])       &&
+        _areCollectionsEqual([style1 fills],          [style2 fills])         &&
+        _areCollectionsEqual([style1 innerShadows],   [style2 innerShadows])  &&
+        _areCollectionsEqual([style1 shadows],        [style2 shadows])) {
+
+      areEqual = true
+    }
+
+    return areEqual
+  }
+
+  // MSCollection, MSCollection -> number
+  var _areCollectionsEqual = function(coll1, coll2) {
+    if ([coll1 count] != [coll2 count]) {
+      return 0
+    }
+
+    var predicateIsEnabled =
+      [NSPredicate predicateWithFormat:@"isEnabled == YES"]
+    var enabledObjects1 =
+      [[coll1 array] filteredArrayUsingPredicate:predicateIsEnabled]
+    var enabledObjects2 =
+      [[coll2 array] filteredArrayUsingPredicate:predicateIsEnabled]
+
+    if ([enabledObjects1 count] != [enabledObjects2 count]) {
+      return 0
+    }
+
+    for (var i = 0, l = [enabledObjects1 count]; i < l; i++) {
+      if (!_areObjectsEqual([enabledObjects1 objectAtIndex:i],
+                            [enabledObjects2 objectAtIndex:i])) {
+        return 0
+      }
+    }
+
+    return 1
+  }
+
+  // MSObject, MSObject -> bool
+  var _areObjectsEqual = function(obj1, obj2) {
+    if ([obj1 isEnabled] && [obj2 isEnabled]) {
+      var dic1 = _getAsDicWithoutObjectID(obj1)
+      var dic2 = _getAsDicWithoutObjectID(obj2)
+      return [dic1 isEqualToDictionary:dic2]
+    } else if (![obj1 isEnabled] && ![obj2 isEnabled]) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  // MSObject -> NSMutableDictionary
+  var _getAsDicWithoutObjectID = function(object) {
+    var dic = [object treeAsDictionary]
+    // FIXME: What if there is no 'objectID' key in object?
+    [dic removeObjectForKey:"objectID"]
+    return dic
+  }
+
+  return {
+    areStylesEqual : areStylesEqual
+  }
+})()

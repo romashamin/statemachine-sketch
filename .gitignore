@@ -3,3 +3,6 @@
 *.log
 *.swp
 hidden
+node_modules
+npm-debug.log
+tmp
