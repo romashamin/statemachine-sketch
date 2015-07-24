@@ -1,5 +1,5 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
+var gulp   = require('gulp'),
+    concat = require('gulp-concat');
 
 var srcFiles = [
   './src/header.coscript',
@@ -14,13 +14,15 @@ gulp.task('concat', function() {
     .pipe(gulp.dest('./State-Machine.sketchplugin/Contents/Sketch/'));
 });
 
-gulp.task('copy', function() {
+gulp.task('copy', ['concat'], function() {
   return gulp.src(['./State-Machine.sketchplugin/**/*'], { base: './' })
     .pipe(gulp.dest('/Users/roma/Library/Containers/com.bohemiancoding.sketch3/Data/Library/Application Support/com.bohemiancoding.sketch3/Plugins/'));
 });
 
 gulp.task('build', ['concat', 'copy']);
 
-gulp.task('default', function() {
-  gulp.start(['build']);
+gulp.task('default', ['build']);
+
+gulp.task('watch', function() {
+  gulp.watch(srcFiles, ['build']);
 });
