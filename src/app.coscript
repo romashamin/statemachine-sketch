@@ -1,22 +1,20 @@
 /**
+ * Globals
+ */
+
+var keyString = "::"
+var keyRegExp = /\s*::\s*/
+
+
+
+/**
  * App Module
  */
 
 var app = (function(msl) {
-
-  var keyString = "::"
-  var keyRegExp = /\s*::\s*/
-  var pluginNamePrefix = "State Machine: "
-  var msgText = {
-    noGroupSelected : pluginNamePrefix + "select a layer group",
-    noKeyFound      : pluginNamePrefix + "name a group like ‘Active" + keyString + "id’",
-    somethingWrong  : pluginNamePrefix + "something went wrong :(",
-    OK              : pluginNamePrefix + "OK"
-  }
-
-  // NSArray -> ...
+  // NSArray -> String
   var switchState = function(group) {
-    var resultBool = true
+    var resultString = app.msg.success()
     var groupName = [group name]
     var nameParts = groupName.split(keyRegExp)
     var layerIdToSetActive = nameParts[nameParts.length - 1]
@@ -41,24 +39,24 @@ var app = (function(msl) {
             [layerToSetActive setStyle:styleActive]
             [layerWithActiveStyle setStyle:styleRest]
           } else {
-            resultBool = false
+            resultString = app.msg.noLayerWithId(groupName, layerIdToSetActive)
           }
         } else {
-          resultBool = false
+          resultString = app.msg.noLayerWithActiveStyle(groupName)
         }
       } else {
-        resultBool = false
+        resultString = app.msg.noLayersWithKey(groupName)
       }
     } else {
-      resultBool = false
+      resultString = app.msg.groupIsEmpty(groupName)
     }
 
-    return resultBool
+    return resultString
   }
 
   // NSArray -> String
   var init = function(selectedLayers) {
-    var resultString = msgText.OK
+    var resultString = app.msg.success()
 
     if (msl.isNSArrayExist(selectedLayers)) {
       var selectedGroups = msl.getGroupLayers(selectedLayers)
@@ -69,18 +67,21 @@ var app = (function(msl) {
 
         if (msl.isNSArrayExist(selectedGroupsWithKeyInName)) {
           var loopGroup = [selectedGroupsWithKeyInName objectEnumerator]
+          var msgArray = []
 
           while (group = [loopGroup nextObject]) {
-            switchState(group)
+            msgArray.push(switchState(group))
           }
+
+          resultString = msgArray.join("  |  ")
         } else {
-          resultString = msgText.noKeyFound
+          resultString = app.msg.noGroupWithKey()
         }
       } else {
-        resultString = msgText.noGroupSelected
+        resultString = app.msg.noGroupSelected()
       }
     } else {
-      resultString = msgText.noGroupSelected
+      resultString = app.msg.noGroupSelected()
     }
 
     return resultString
@@ -90,6 +91,51 @@ var app = (function(msl) {
     init : init
   }
 })(msl)
+
+
+
+/**
+ * App Messaging Module
+ */
+
+app.msg = (function() {
+
+  var pluginNamePrefix = "State Machine"
+  var dividerString = " → "
+
+  var divider = function() { return dividerString }
+
+  var _makeMessage = function(msgText) {
+    return function(startStr, endStr) {
+      var startStr = startStr ? (startStr + dividerString) : ""
+      var endStr   = endStr ? (" " + endStr) : ""
+      return pluginNamePrefix + dividerString + startStr + msgText + endStr
+    }
+  }
+
+  var success         = _makeMessage("✔︎")
+  var noGroupSelected = _makeMessage("Select a layer group")
+  var noGroupWithKey  = _makeMessage(
+                          "Name a group like ‘Active" + keyString + "id’")
+  var groupIsEmpty    = _makeMessage("Group is empty")
+  var noLayersWithKey = _makeMessage(
+                          "No layers with ‘" + keyString + "’ in group")
+  var noLayerWithActiveStyle = _makeMessage("No layer with distinct style")
+  var noLayerWithId   = _makeMessage("No layer with id")
+  var somethingWrong  = _makeMessage("Something went wrong :(")
+
+  return {
+    divider                 : divider,
+    success                 : success,
+    noGroupSelected         : noGroupSelected,
+    noGroupWithKey          : noGroupWithKey,
+    groupIsEmpty            : groupIsEmpty,
+    noLayersWithKey         : noLayersWithKey,
+    noLayerWithActiveStyle  : noLayerWithActiveStyle,
+    noLayerWithId           : noLayerWithId,
+    somethingWrong          : somethingWrong
+  }
+})()
 
 
 
