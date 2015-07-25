@@ -153,7 +153,7 @@ var msl = (function() {
    var indexOfPenultimate = [layers count] - 2
    var indexOfLast        = [layers count] - 1
 
-   for (var i = indexOfSecond; i < indexOfPenultimate; i++) {
+   for (var i = indexOfSecond; i < indexOfLast; i++) {
      var currentLayer  = [layers objectAtIndex:i]
      var previousLayer = [layers objectAtIndex:i-1]
      var nextLayer     = [layers objectAtIndex:i+1]
