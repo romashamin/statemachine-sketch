@@ -200,7 +200,7 @@ var app = (function(msl) {
 
   var keyString = "::"
   var keyRegExp = /\s*::\s*/
-  var pluginNamePrefix = "Stater: "
+  var pluginNamePrefix = "State Machine: "
   var msgText = {
     noGroupSelected : pluginNamePrefix + "select a layer group",
     noKeyFound      : pluginNamePrefix + "name a group like ‘Active" + keyString + "id’",
