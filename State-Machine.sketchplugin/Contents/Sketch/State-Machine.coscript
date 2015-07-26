@@ -219,24 +219,29 @@ var app = (function(msl) {
         msl.getLayersWithSubstringInName(layers, keyString)
 
       if (msl.isNSArrayExist(layersWithKeyInName)) {
-        var layerWithActiveStyle =
-          msl.getLayerWithDistinctStyle(layersWithKeyInName)
 
-        if (layerWithActiveStyle) {
-          var layerToSetActive =
-            msl.getLayerByIdInName(layersWithKeyInName, layerIdToSetActive)
+        if ([layersWithKeyInName count] >= 3) {
+          var layerWithActiveStyle =
+            msl.getLayerWithDistinctStyle(layersWithKeyInName)
 
-          if (layerToSetActive) {
-            var styleActive = [layerWithActiveStyle style]
-            var styleRest = [layerToSetActive style]
+          if (layerWithActiveStyle) {
+            var layerToSetActive =
+              msl.getLayerByIdInName(layersWithKeyInName, layerIdToSetActive)
 
-            [layerToSetActive setStyle:styleActive]
-            [layerWithActiveStyle setStyle:styleRest]
+            if (layerToSetActive) {
+              var styleActive = [layerWithActiveStyle style]
+              var styleRest = [layerToSetActive style]
+
+              [layerToSetActive setStyle:styleActive]
+              [layerWithActiveStyle setStyle:styleRest]
+            } else {
+              resultString = app.msg.noLayerWithId(groupName, layerIdToSetActive)
+            }
           } else {
-            resultString = app.msg.noLayerWithId(groupName, layerIdToSetActive)
+            resultString = app.msg.noLayerWithActiveStyle(groupName)
           }
         } else {
-          resultString = app.msg.noLayerWithActiveStyle(groupName)
+          resultString = app.msg.notEnoughLayers(groupName)
         }
       } else {
         resultString = app.msg.noLayersWithKey(groupName)
@@ -309,12 +314,15 @@ app.msg = (function() {
 
   var success         = _makeMessage("✔︎")
   var noGroupSelected = _makeMessage("Select a layer group")
-  var noGroupWithKey  = _makeMessage(
-                          "Name a group like ‘Active" + keyString + "id’")
+  var noGroupWithKey  =
+        _makeMessage("Name a group like ‘Active" + keyString + "id’")
   var groupIsEmpty    = _makeMessage("Group is empty")
-  var noLayersWithKey = _makeMessage(
-                          "No layers with ‘" + keyString + "’ in group")
-  var noLayerWithActiveStyle = _makeMessage("No layer with distinct style")
+  var noLayersWithKey =
+        _makeMessage("No layers with ‘" + keyString + "’ in group")
+  var notEnoughLayers =
+        _makeMessage("Put inside at least 3 layers with ‘" + keyString + "’")
+  var noLayerWithActiveStyle =
+        _makeMessage("No layer with distinct style")
   var noLayerWithId   = _makeMessage("No layer with id")
   var somethingWrong  = _makeMessage("Something went wrong :(")
 
@@ -325,6 +333,7 @@ app.msg = (function() {
     noGroupWithKey          : noGroupWithKey,
     groupIsEmpty            : groupIsEmpty,
     noLayersWithKey         : noLayersWithKey,
+    notEnoughLayers         : notEnoughLayers,
     noLayerWithActiveStyle  : noLayerWithActiveStyle,
     noLayerWithId           : noLayerWithId,
     somethingWrong          : somethingWrong
