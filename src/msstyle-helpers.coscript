@@ -11,6 +11,7 @@
  *  innerShadows    : MSInnerShadowStyleCollection
  *  reflection      : MSStyleReflection
  *  shadows         : MSShadowStyleCollection
+ *  textStyle       : MSTextStyle
  */
 
 var mss = (function() {
@@ -25,7 +26,8 @@ var mss = (function() {
         _areCollectionsEqual([style1 borders],        [style2 borders])       &&
         _areCollectionsEqual([style1 fills],          [style2 fills])         &&
         _areCollectionsEqual([style1 innerShadows],   [style2 innerShadows])  &&
-        _areCollectionsEqual([style1 shadows],        [style2 shadows])) {
+        _areCollectionsEqual([style1 shadows],        [style2 shadows])       &&
+        _areObjectsEqual(    [style1 textStyle],      [style2 textStyle])) {
 
       areEqual = true
     }
@@ -62,14 +64,28 @@ var mss = (function() {
 
   // MSObject, MSObject -> bool
   var _areObjectsEqual = function(obj1, obj2) {
-    if ([obj1 isEnabled] && [obj2 isEnabled]) {
+
+    var __areDicsEqual = function(obj1, obj2) {
       var dic1 = _getAsDicWithoutObjectID(obj1)
       var dic2 = _getAsDicWithoutObjectID(obj2)
       return [dic1 isEqualToDictionary:dic2]
-    } else if (![obj1 isEnabled] && ![obj2 isEnabled]) {
-      return true
+    }
+
+    if (obj1 && obj2) {
+      if ([obj1 respondsToSelector:"isEnabled"] &&
+          [obj2 respondsToSelector:"isEnabled"]) {
+        if ([obj1 isEnabled] && [obj2 isEnabled]) {
+          return __areDicsEqual(obj1, obj2)
+        } else if (![obj1 isEnabled] && ![obj2 isEnabled]) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return __areDicsEqual(obj1, obj2)
+      }
     } else {
-      return false
+      return true
     }
   }
 
