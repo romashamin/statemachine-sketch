@@ -120,92 +120,92 @@ var mss = (function() {
 
 var msl = (function() {
 
- var predicateGroupLayers =
-   [NSPredicate predicateWithFormat:@"self isMemberOfClass:%@", [MSLayerGroup class]]
- var predicateShapeLayers =
-   [NSPredicate predicateWithFormat:@"self isMemberOfClass:%@", [MSShapeGroup class]]
+  var predicateGroupLayers =
+    [NSPredicate predicateWithFormat:@"self isMemberOfClass:%@", [MSLayerGroup class]]
+  var predicateShapeLayers =
+    [NSPredicate predicateWithFormat:@"self isMemberOfClass:%@", [MSShapeGroup class]]
 
- // NSPredicate -> (->)
- var _makeLayersFilter = function(predicate) {
-  return function(layers) {
-    return [layers filteredArrayUsingPredicate:predicate]
+  // NSPredicate -> (->)
+  var _makeLayersFilter = function(predicate) {
+    return function(layers) {
+      return [layers filteredArrayUsingPredicate:predicate]
+    }
   }
- }
 
- // NSArray -> NSArray
- var getGroupLayers = _makeLayersFilter(predicateGroupLayers)
+  // NSArray -> NSArray
+  var getGroupLayers = _makeLayersFilter(predicateGroupLayers)
 
- // NSArray -> NSArray
- var getShapeLayers = _makeLayersFilter(predicateShapeLayers)
+  // NSArray -> NSArray
+  var getShapeLayers = _makeLayersFilter(predicateShapeLayers)
 
- // NSArray, String -> NSArray
- var getLayersWithSubstringInName = function(layers, substring) {
-   var predicateLayersWithSubstringInName =
-     [NSPredicate predicateWithFormat:@"name CONTAINS %@", substring]
+  // NSArray, String -> NSArray
+  var getLayersWithSubstringInName = function(layers, substring) {
+    var predicateLayersWithSubstringInName =
+      [NSPredicate predicateWithFormat:@"name CONTAINS %@", substring]
 
-   return _makeLayersFilter(predicateLayersWithSubstringInName)(layers)
- }
+    return _makeLayersFilter(predicateLayersWithSubstringInName)(layers)
+  }
 
- // NSArray, String -> MSLayer
- var getLayerByIdInName = function(layers, id) {
-   var result = undefined
-   var resultLayers = getLayersWithSubstringInName(layers, id)
+  // NSArray, String -> MSLayer
+  var getLayerByIdInName = function(layers, id) {
+    var result = undefined
+    var resultLayers = getLayersWithSubstringInName(layers, id)
 
-   if (isNSArrayExist(resultLayers)) {
-     result = [resultLayers objectAtIndex:0]
-   }
+    if (isNSArrayExist(resultLayers)) {
+      result = [resultLayers objectAtIndex:0]
+    }
 
-   return result
- }
+    return result
+  }
 
- // NSArray -> MSLayer
- var getLayerWithDistinctStyle = function(layers) {
-   if ([layers count] < 3) {
-     return undefined
-   }
+  // NSArray -> MSLayer
+  var getLayerWithDistinctStyle = function(layers) {
+    if ([layers count] < 3) {
+      return undefined
+    }
 
-   var indexOfFirst  = 0
-   var indexOfSecond = 1
-   var indexOfPenultimate = [layers count] - 2
-   var indexOfLast        = [layers count] - 1
+    var indexOfFirst  = 0
+    var indexOfSecond = 1
+    var indexOfPenultimate = [layers count] - 2
+    var indexOfLast        = [layers count] - 1
 
-   for (var i = indexOfSecond; i < indexOfLast; i++) {
-     var currentLayer  = [layers objectAtIndex:i]
-     var previousLayer = [layers objectAtIndex:i-1]
-     var nextLayer     = [layers objectAtIndex:i+1]
+    for (var i = indexOfSecond; i < indexOfLast; i++) {
+      var currentLayer  = [layers objectAtIndex:i]
+      var previousLayer = [layers objectAtIndex:i-1]
+      var nextLayer     = [layers objectAtIndex:i+1]
 
-     if (!mss.areStylesEqual([currentLayer style], [previousLayer style]) &&
-         !mss.areStylesEqual([currentLayer style], [nextLayer style])) {
-       return currentLayer
-     }
-   }
+      if (!mss.areStylesEqual([currentLayer style], [previousLayer style]) &&
+          !mss.areStylesEqual([currentLayer style], [nextLayer style])) {
+        return currentLayer
+      }
+    }
 
-   if (!mss.areStylesEqual([[layers objectAtIndex:indexOfFirst] style],
-                           [[layers objectAtIndex:indexOfSecond] style])) {
-     return [layers objectAtIndex:indexOfFirst]
-   }
+    if (!mss.areStylesEqual([[layers objectAtIndex:indexOfFirst] style],
+                            [[layers objectAtIndex:indexOfSecond] style])) {
+      return [layers objectAtIndex:indexOfFirst]
+    }
 
-   if (!mss.areStylesEqual([[layers objectAtIndex:indexOfLast] style],
-                           [[layers objectAtIndex:indexOfPenultimate] style])) {
-     return [layers objectAtIndex:indexOfLast]
-   }
+    if (!mss.areStylesEqual([[layers objectAtIndex:indexOfLast] style],
+                            [[layers objectAtIndex:indexOfPenultimate] style])) {
+      return [layers objectAtIndex:indexOfLast]
+    }
 
-   return undefined
- }
+    return undefined
+  }
 
- // NSArray -> bool
- var isNSArrayExist = function(nsarray) {
-   return nsarray && [nsarray count] > 0
- }
+  // NSArray -> bool
+  var isNSArrayExist = function(nsarray) {
+    return nsarray && [nsarray count] > 0
+  }
 
- return {
-  getGroupLayers     : getGroupLayers,
-  getShapeLayers     : getShapeLayers,
-  getLayerByIdInName : getLayerByIdInName,
-  isNSArrayExist     : isNSArrayExist,
-  getLayerWithDistinctStyle    : getLayerWithDistinctStyle,
-  getLayersWithSubstringInName : getLayersWithSubstringInName
- }
+  return {
+    getGroupLayers     : getGroupLayers,
+    getShapeLayers     : getShapeLayers,
+    getLayerByIdInName : getLayerByIdInName,
+    isNSArrayExist     : isNSArrayExist,
+    getLayerWithDistinctStyle    : getLayerWithDistinctStyle,
+    getLayersWithSubstringInName : getLayersWithSubstringInName
+  }
 })()
 
 /**
