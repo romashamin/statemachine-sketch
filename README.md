@@ -33,7 +33,7 @@ State Machine has been tested on Sketch 3.3.3 on OS X Yosemite. If you have any 
 
 If you’re a professional web designer or a developer and State Machine saves your time, buy me a cup of pu-erh tea to say ‘thanks’: [pay $3 by PayPal].
 
-[pay $3 by PayPal]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AWYVPVCBHEJXA
+[pay $3 by PayPal]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RRJZJRBE6SS46
 
 ### Roadmap
 
