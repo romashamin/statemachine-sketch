@@ -17,7 +17,7 @@ State Machine is a Sketch plugin. Installing it will allow you to use ⌃⌘S to
 ### Install
 
 1. Download and unzip: [State-Machine-v1.0.sketchplugin.zip].
-2. Open Sketch.app, go to `Plugins → Reveal Plugins Folder...` and add `State-Machine.sketchplugin` there.
+2. Open Sketch.app, go to `Plugins → Manage Plugins... → (Gear Icon in the bottom left corner) → Show Plugins Folder` and add `State-Machine.sketchplugin` there.
 3. Download [Examples.sketch] to understand State Machine better and play with examples a little bit.
 
 [State-Machine-v1.0.sketchplugin.zip]: https://cdn.rawgit.com/romashamin/statemachine-sketch/master/State-Machine-v1.0.sketchplugin.zip
