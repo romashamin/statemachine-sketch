@@ -149,8 +149,8 @@ var msl = (function() {
   // NSArray, String -> MSLayer
   var getLayerByIdInName = function(layers, id) {
     var result = undefined
-    // Regex: /.+::id\b/
-    var regex = ['.+', keyString, id].join('')
+    // Regex: /.*::id\b/
+    var regex = ['.*', keyString, id].join('')
     var predicateNameMatchesRegex =
       [NSPredicate predicateWithFormat:@"name MATCHES %@", regex]
     var resultLayers =
