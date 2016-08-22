@@ -16,16 +16,16 @@ State Machine is a Sketch plugin. Installing it will allow you to use ⌃⌘S to
 
 ### Install
 
-1. Download and unzip: [State-Machine-v1.0.sketchplugin.zip].
-2. Open Sketch.app, go to `Plugins → Manage Plugins... → (Gear Icon in the bottom left corner) → Show Plugins Folder` and add `State-Machine.sketchplugin` there.
+1. Download and unzip [the latest version].
+2. Double click `State-Machine.sketchplugin`.
 3. Download [Examples.sketch] to understand State Machine better and play with examples a little bit.
 
-[State-Machine-v1.0.sketchplugin.zip]: https://cdn.rawgit.com/romashamin/statemachine-sketch/master/State-Machine-v1.0.sketchplugin.zip
+[the latest version]: https://github.com/romashamin/statemachine-sketch/archive/master.zip
 [Examples.sketch]: https://cdn.rawgit.com/romashamin/statemachine-sketch/master/Examples.sketch
 
 ### System Requirements
 
-State Machine has been tested on Sketch 3.3.3 on OS X Yosemite. If you have any problems, drop me a line: [@romanshamin].
+State Machine has been tested on Sketch 39.1 (31720) on OS X Yosemite. If you have any problems, drop me a line: [@romanshamin].
 
 [@romanshamin]: https://twitter.com/romanshamin
 
@@ -34,11 +34,6 @@ State Machine has been tested on Sketch 3.3.3 on OS X Yosemite. If you have any 
 If you’re a professional web designer or a developer and State Machine saves your time, buy me a cup of pu-erh tea to say ‘thanks’: [pay $3 by PayPal].
 
 [pay $3 by PayPal]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RRJZJRBE6SS46
-
-### Roadmap
-
-* Switching styles for two-element components
-* Passing a layer id into a few components
 
 ### Thanks
 
