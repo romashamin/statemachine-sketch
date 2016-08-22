@@ -3,7 +3,7 @@
   "description": "Helps manage state of components like Page Controls and Tab Bars",
   "author": "Roman Shamin",
   "homepage": "https://github.com/romashamin/statemachine-sketch",
-  "version": 1.0,
+  "version": 1.1,
   "identifier": "com.github.romashamin.statemachine-sketch",
   "updateURL": "https://github.com/romashamin/statemachine-sketch",
   "compatibleVersion": 3,
