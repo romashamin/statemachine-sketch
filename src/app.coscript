@@ -18,7 +18,7 @@ var app = (function(msl) {
     var groupName = [group name]
     var nameParts = groupName.split(keyRegExp)
     var layerIdToSetActive = nameParts[nameParts.length - 1]
-    var layers = [[group layers] array]
+    var layers = [group layers]
 
     if (msl.isNSArrayExist(layers)) {
       var layersWithKeyInName =

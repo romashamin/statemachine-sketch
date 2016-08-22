@@ -44,9 +44,9 @@ var mss = (function() {
     var predicateIsEnabled =
       [NSPredicate predicateWithFormat:@"isEnabled == YES"]
     var enabledObjects1 =
-      [[coll1 array] filteredArrayUsingPredicate:predicateIsEnabled]
+      [coll1 filteredArrayUsingPredicate:predicateIsEnabled]
     var enabledObjects2 =
-      [[coll2 array] filteredArrayUsingPredicate:predicateIsEnabled]
+      [coll2 filteredArrayUsingPredicate:predicateIsEnabled]
 
     if ([enabledObjects1 count] != [enabledObjects2 count]) {
       return 0
